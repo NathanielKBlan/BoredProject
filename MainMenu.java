@@ -18,17 +18,6 @@ public class MainMenu{
 		initialize();
 		generatePlayListAndPlay();
 
-		System.out.println("Would you like to listen to some more my master? ");
-		
-		Scanner yesNo = new Scanner(System.in);
-		if(yesNo.next().toUpperCase().equals("YES")){
-			generatePlayListAndPlay();
-			mediaPlayer.stop();
-		}else{
-			System.out.println("Further updates coming.");
-			System.exit(0);
-		}
-
 		System.out.println("Further updates coming.");
 		System.exit(0);
 
@@ -76,6 +65,22 @@ public class MainMenu{
 		playSong(chosenOpt, list);
 
 		waitForEnd();
+
+		System.out.println("Would you like to listen to some more my master? ");
+		
+		//Takes in yes or no input
+		Scanner yesNo = new Scanner(System.in);
+
+		if(yesNo.next().toUpperCase().equals("YES")){
+
+			//Without this recursion the program would be broken after listening to one song
+			generatePlayListAndPlay();
+			mediaPlayer.stop();
+			
+		}else{
+			System.out.println("Further updates coming.");
+			System.exit(0);
+		}
 	}
 
 	private void playSong(int c, String[] list){
