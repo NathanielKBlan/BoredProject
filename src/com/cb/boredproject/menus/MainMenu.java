@@ -100,7 +100,6 @@ public class MainMenu{
 
 		System.out.println("Now playing " + chosenSong + "...");
 
-		//TODO Fix this so that it actually finds the song in the resources file
 		Media song = new Media(new File("Resources/"+chosenSong).toURI().toString());
 		mediaPlayer = new MediaPlayer(song);
 
