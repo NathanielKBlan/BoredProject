@@ -7,3 +7,7 @@ This mp3 player is customizable to your liking, to add songs simply include it i
 2. An option to save custom playlists
 ## Far Future Update
 An option to potentialy browse for songs you may want to add off of youtube or your system 
+## Requirements
+1. Java
+2. Javafx library (https://openjfx.io)
+3. If you want to run without having to set the classpath and other configuration options then use an IDE like Eclipse or    IntelliJ (Eclipse: https://www.eclipse.org/downloads/) (IntelliJ: https://www.jetbrains.com/idea/)
