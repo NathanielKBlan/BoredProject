@@ -10,4 +10,5 @@ An option to potentialy browse for songs you may want to add off of youtube or y
 ## Requirements
 1. Java
 2. Javafx library (https://openjfx.io)
-3. If you want to run without having to set the classpath and other configuration options then use an IDE like Eclipse or    IntelliJ (Eclipse: https://www.eclipse.org/downloads/) (IntelliJ: https://www.jetbrains.com/idea/)
+3. If you want to run without having to set the classpath and other configuration options then use an IDE like Eclipse or          IntelliJ (Eclipse: https://www.eclipse.org/downloads/) (IntelliJ: https://www.jetbrains.com/idea/)
+    * Must add javafx library to classpath. For Eclipse and IntelliJ: Project Properties --> Java Build Path --> Classpath -->       Add Library
