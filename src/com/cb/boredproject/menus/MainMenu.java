@@ -8,32 +8,77 @@ import com.cb.boredproject.BoredMain;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import java.io.File;
+
+//Import for a later feature
+//import java.io.IOException;
+
 import javafx.embed.swing.JFXPanel;
 import javafx.util.Duration;
 import javafx.scene.media.MediaPlayer.Status;
 
-
+//TODO Remake the MainMenu in a way that it has various options, such as search, random playlist aka shuffle, and play by album etc...
 public class MainMenu{
 
 	private static MediaPlayer mediaPlayer;
-	private int playListLimit = 5;
+	private int playListLimit = 8;
+	private ArrayList<String> songs = new ArrayList<String>();
 
 	public MainMenu(){
-
+		
+		fetchSongs("Resources/");
+		
 	}
 
 	public void initialize(){
 		
-		System.out.println("What would you like me to play for you " + BoredMain.name +"?");
-		generatePlayListAndPlay();
+		printMenu();
+		
+	}
+	
+	private void printMenu() {
+		
+		String[] options = {"Random Playlist", "Browse Songs", "Shuffle", "Exit"};
+		MenuGenerator menGen = new MenuGenerator(options.length);
+		String[] menu = menGen.getList();
+		
+		for(int i = 0; i <= options.length - 1; i++) {
+			
+				menu[i] = menu[i] + " " + options[i];
+				
+		}
+		
+		for(int i = 0; i <= menu.length - 1; i++) {
+			
+			System.out.println(menu[i]);
+			
+		}
+		
+		System.out.print("Which would you like me to do for you " + BoredMain.name +"? ");
+		int choice = userChoice(menu.length);
+		
+		switch(choice) {
+		case 1:
+			generatePlayListAndPlay();
+		case 2:
+			System.out.println("Further updates coming.");
+		case 3: 
+			System.out.println("Further updates coming.");
+		case 4:
+			System.exit(0);
+		}
 		
 	}
 
 	private void generatePlayListAndPlay(){
 
-		//You can add your songs to the list here
-		String[] songs = {"Radioactive", "What's Up Danger", "Centuries", "Rocket Man", "The Lion Sleeps Tonight", "Soviet Anthem", "Fortunate Son", "Das Einheitsfrontlied"};
-
+		String[] songsList = new String[songs.size()];
+		
+		for(int i = 0; i < songsList.length; i++) {
+			
+			songsList[i] = songs.get(i);
+			
+		}
+		
 		MenuGenerator menGen = new MenuGenerator(playListLimit);
 		String[] list = menGen.getList();
 		ArrayList<Integer> usedSongs = new ArrayList<Integer>();
@@ -41,17 +86,30 @@ public class MainMenu{
 		//Generate a random playlist from available songs
 		for(int i = 0; i <= list.length - 1; i++){
 
-			int randomSong = (int) Math.round(Math.random() * (songs.length - 1)) + 0;
+			int randomSong = (int) Math.round(Math.random() * (songsList.length - 1)) + 0;
+			
 			if(usedSongs.contains(randomSong)){
-				int randomSong2 = (int) Math.round(Math.random() * (songs.length - 1)) + 0;
+				
+				int randomSong2 = (int) Math.round(Math.random() * (songsList.length - 1)) + 0;
+				
 				while(usedSongs.contains(randomSong2)){
-					randomSong2 = (int) Math.round(Math.random() * (songs.length - 1)) + 0;
+					
+					randomSong2 = (int) Math.round(Math.random() * (songsList.length - 1)) + 0;
+					
 				}
-				list[i] = list[i] + songs[randomSong2];
+				
+				list[i] = list[i] + songsList[randomSong2];
+				int mp3Index = list[i].indexOf(".mp3");
+				list[i] = list[i].substring(0, mp3Index);
 				usedSongs.add(randomSong2);
+				
 			}else{
-				list[i] = list[i] + songs[randomSong];
+				
+				list[i] = list[i] + songsList[randomSong];
+				int mp3Index = list[i].indexOf(".mp3");
+				list[i] = list[i].substring(0, mp3Index);
 				usedSongs.add(randomSong);
+				
 			}
 
 		}
@@ -61,15 +119,23 @@ public class MainMenu{
 			System.out.println(list[i]);
 		}
 
-		System.out.print("Choose one of those numbers mortal: ");
+		System.out.print("Choose a song, any song: ");
 
-		int chosenOpt = userChoice();
+		int chosenOpt = userChoice(playListLimit);
 
+		//Clears the console to avoid that extra unapealing and useless text, feature doesn't work right now.
+		/*try{
+		 *	Runtime.getRuntime().exec("clear");
+		 *}catch(IOException e){
+		 *	e.printStackTrace();
+		 *}
+		 */		
+		
 		playSong(chosenOpt, list);
 
 		waitForEnd();
 
-		System.out.println("Would you like to listen to some more my master? ");
+		System.out.print("Would you like to listen to some more " + BoredMain.name + "? ");
 		
 		//Takes in yes or no input
 		//DO NOT close any of the scanners, doing so will result in a no element found exception
@@ -83,24 +149,26 @@ public class MainMenu{
 			mediaPlayer.stop();
 			
 		}else{
-			System.out.println("Further updates coming.");
-			//yesNo.close();
-			System.exit(0);
+			
+			printMenu();
+			
 		}
 	}
 
 	private void playSong(int c, String[] list){
-		//Fix for bug (Toolkit not initialized bug).
 		
+		
+		
+		//Fix for bug (Toolkit not initialized bug).
 		@SuppressWarnings("unused")
 		final JFXPanel fxPanel = new JFXPanel();
 
-		//Removes spaces from song name in order to match mp3 file
-		String chosenSong = list[c - 1].substring(2).replaceAll("\\s+","") + ".mp3";
+		//Removes spaces and number from string to match song
+		String chosenSong = list[c - 1].substring(3) ;
 
 		System.out.println("Now playing " + chosenSong + "...");
 
-		Media song = new Media(new File("Resources/"+chosenSong).toURI().toString());
+		Media song = new Media(new File("Resources/" + chosenSong + ".mp3").toURI().toString());
 		mediaPlayer = new MediaPlayer(song);
 
 		mediaPlayer.setStartTime(new Duration(0));
@@ -132,7 +200,8 @@ public class MainMenu{
 
 	}
 
-	private int userChoice(){
+	//TODO Make it so that the user can type song name or number in playlist
+	private int userChoice(int optionsLimit){
 
 		try{
 			
@@ -141,10 +210,10 @@ public class MainMenu{
 			Scanner choice = new Scanner(System.in);
 			String chosenOption = choice.nextLine();
 
-			if(Integer.parseInt(chosenOption) > playListLimit || Integer.parseInt(chosenOption) < 1){
+			if(Integer.parseInt(chosenOption) > optionsLimit || Integer.parseInt(chosenOption) < 1){
 				
-				System.out.println("That was not a valid option. What of choose one of those numbers do you not understand? Please enter a VALID option");
-				return userChoice();
+				System.out.print("That was not a valid option. Please enter a VALID option: ");
+				return userChoice(optionsLimit);
 				
 			}else{
 				
@@ -153,9 +222,31 @@ public class MainMenu{
 			}
 
 		}catch(Exception e){
-			System.out.println("That was not a valid option. What of choose one of those numbers do you not understand? Please enter a VALID option");
-			return userChoice();
+			System.out.print("That was not a valid option. Please enter a VALID option: ");
+			return userChoice(optionsLimit);
 		}
 
 	}
+	
+	//This will search for and retrieve every song under the Resources folder
+	//TODO Fetch all songs under resources and print them out as options as well as create a menu for optios
+	private void fetchSongs(String musicLocation) {
+		
+		File musicDir = new File(musicLocation);
+		File[] musicList = musicDir.listFiles();
+		
+		for(File x: musicList) {
+			
+			if(x == null)
+				return;
+			if(x.isHidden() || !x.canRead())
+				continue;
+			else if(x.getName().endsWith(".mp3"))
+				songs.add(x.getName());
+			
+		}
+		
+	}
+	
+	
 }

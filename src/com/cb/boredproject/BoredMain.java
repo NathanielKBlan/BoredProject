@@ -8,6 +8,7 @@ import com.cb.boredproject.menus.MainMenu;;
 *  listen to music. Further updates will come. -NKB   
 *  P.S. this project is open source, it's free, enjoy it
 */ 
+
 public class BoredMain{
 
 	public static String name;
@@ -22,15 +23,21 @@ public class BoredMain{
 			//System.out.println("Index: " + i);
 
 	public static void welcome(){
-		System.out.println("Hi and welcome to this program written by Nathaniel Blanquel just because he was bored on the plane.");
-		System.out.println("Who is my supreme leader today?");
+		System.out.println("Hi and welcome to Nate's personal text based mp3 player, aka BoredProject.");
+		System.out.print("Who is my listener today? ");
 
 		Scanner welcome_scanner = new Scanner(System.in);
 		name = setName(welcome_scanner);
 
-		System.out.println("Hello " + name + ". Nice to meet you my master.");
+		System.out.println("Hello " + name + ". Nice to meet you my listener.");
 		System.out.println("Initializing program...");
 
+		//Makes it look like there's actually something to load
+		try{
+			Thread.sleep(3000);
+		}catch(Exception e){
+			e.printStackTrace();
+		}
 		
 		startup();
 		welcome_scanner.close();
