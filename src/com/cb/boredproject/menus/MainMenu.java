@@ -60,7 +60,7 @@ public class MainMenu{
 		case 1:
 			generatePlayListAndPlay();
 		case 2:
-			System.out.println("Further updates coming.");
+			browseAndPlay();
 		case 3: 
 			System.out.println("Further updates coming.");
 		case 4:
@@ -164,7 +164,8 @@ public class MainMenu{
 		final JFXPanel fxPanel = new JFXPanel();
 
 		//Removes spaces and number from string to match song
-		String chosenSong = list[c - 1].substring(3) ;
+		String chosenSong = list[c - 1];
+		chosenSong = chosenSong.replace(c + ". ", "");
 
 		System.out.println("Now playing " + chosenSong + "...");
 
@@ -248,5 +249,59 @@ public class MainMenu{
 		
 	}
 	
-	
+	private void browseAndPlay(){
+
+		String[] songsList = new String[songs.size()];
+		
+		for(int i = 0; i < songsList.length; i++) {
+			
+			songsList[i] = songs.get(i);
+			
+		}
+		
+		MenuGenerator menGen = new MenuGenerator(songsList.length);
+		String[] list = menGen.getList();
+		
+
+		
+		for(int i = 0; i <= list.length - 1; i++){
+
+			list[i] = list[i] + songsList[i];
+			int mp3Index = list[i].indexOf(".mp3");
+			list[i] = list[i].substring(0, mp3Index);
+
+		}
+
+		//Print playlist
+		for(int i = 0; i < list.length; i++){
+			System.out.println(list[i]);
+		}
+
+		System.out.print("Choose a song, any song: ");
+
+		int chosenOpt = userChoice(list.length);
+		
+		playSong(chosenOpt, list);
+
+		waitForEnd();
+
+		System.out.print("Would you like to listen to some more " + BoredMain.name + "? ");
+		
+		//Takes in yes or no input
+		//DO NOT close any of the scanners, doing so will result in a no element found exception
+		@SuppressWarnings("resource")
+		Scanner yesNo = new Scanner(System.in);
+
+		if(yesNo.next().toUpperCase().equals("YES")){
+
+			//Without this recursion the program would be broken after listening to one song
+			browseAndPlay();
+			mediaPlayer.stop();
+			
+		}else{
+			
+			printMenu();
+			
+		}
+	}
 }
