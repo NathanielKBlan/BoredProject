@@ -1,6 +1,7 @@
 package com.cb.boredproject.menus;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Scanner;
 
 import com.cb.boredproject.BoredMain;
@@ -35,9 +36,12 @@ public class MainMenu{
 		
 	}
 	
+	//Prints the main menu
 	private void printMenu() {
 		
-		String[] options = {"Random Playlist", "Browse Songs", "Shuffle", "Exit"};
+		System.out.println("-------------MAIN MENU-------------");
+		
+		String[] options = {"Random Playlist", "Browse Songs", "Create Custom Playlist", "Shuffle", "Exit"};
 		MenuGenerator menGen = new MenuGenerator(options.length);
 		String[] menu = menGen.getList();
 		
@@ -53,7 +57,10 @@ public class MainMenu{
 			
 		}
 		
+		System.out.println("-----------------------------------");
+		
 		System.out.print("Which would you like me to do for you " + BoredMain.name +"? ");
+		
 		int choice = userChoice(menu.length);
 		
 		switch(choice) {
@@ -61,14 +68,33 @@ public class MainMenu{
 			generatePlayListAndPlay();
 		case 2:
 			browseAndPlay();
-		case 3: 
+		case 3:
 			System.out.println("Further updates coming.");
-		case 4:
+			printMenu();
+		case 4: 
+			shuffle();
+			printMenu();
+		case 5:
 			System.exit(0);
 		}
 		
 	}
 
+	private void shuffle() {
+		
+		ArrayList<String> songsShuffleList = songs;
+		Collections.shuffle(songsShuffleList);
+		
+		for(int i = 0; i <= songsShuffleList.size() - 1; i++) {
+			
+			playSong(songsShuffleList.get(i).replace(".mp3", ""));
+			waitForEnd();
+			
+		}
+		
+	}
+	
+	//Generates a random play list, displays the options, and takes in the users choice
 	private void generatePlayListAndPlay(){
 
 		String[] songsList = new String[songs.size()];
@@ -81,43 +107,10 @@ public class MainMenu{
 		
 		MenuGenerator menGen = new MenuGenerator(playListLimit);
 		String[] list = menGen.getList();
-		ArrayList<Integer> usedSongs = new ArrayList<Integer>();
+		
 
 		//Generate a random playlist from available songs
-		for(int i = 0; i <= list.length - 1; i++){
-
-			int randomSong = (int) Math.round(Math.random() * (songsList.length - 1)) + 0;
-			
-			if(usedSongs.contains(randomSong)){
-				
-				int randomSong2 = (int) Math.round(Math.random() * (songsList.length - 1)) + 0;
-				
-				while(usedSongs.contains(randomSong2)){
-					
-					randomSong2 = (int) Math.round(Math.random() * (songsList.length - 1)) + 0;
-					
-				}
-				
-				list[i] = list[i] + songsList[randomSong2];
-				int mp3Index = list[i].indexOf(".mp3");
-				list[i] = list[i].substring(0, mp3Index);
-				usedSongs.add(randomSong2);
-				
-			}else{
-				
-				list[i] = list[i] + songsList[randomSong];
-				int mp3Index = list[i].indexOf(".mp3");
-				list[i] = list[i].substring(0, mp3Index);
-				usedSongs.add(randomSong);
-				
-			}
-
-		}
-
-		//Print playlist
-		for(int i = 0; i < list.length; i++){
-			System.out.println(list[i]);
-		}
+		printSongsList(list, songsList, true);
 
 		System.out.print("Choose a song, any song: ");
 
@@ -155,9 +148,8 @@ public class MainMenu{
 		}
 	}
 
+	//Checks to see if song is in the resource folder and plays it if it is
 	private void playSong(int c, String[] list){
-		
-		
 		
 		//Fix for bug (Toolkit not initialized bug).
 		@SuppressWarnings("unused")
@@ -186,6 +178,33 @@ public class MainMenu{
 		mediaPlayer.play();
 	}
 
+	private void playSong(String name){
+		
+		//Fix for bug (Toolkit not initialized bug).
+		@SuppressWarnings("unused")
+		final JFXPanel fxPanel = new JFXPanel();
+
+		//Removes spaces and number from string to match song
+
+		System.out.println("Now playing " + name + "...");
+
+		Media song = new Media(new File("Resources/" + name + ".mp3").toURI().toString());
+		mediaPlayer = new MediaPlayer(song);
+
+		mediaPlayer.setStartTime(new Duration(0));
+
+		
+		//Stop when song ends
+		mediaPlayer.setOnEndOfMedia(new Runnable() {
+    		@Override
+    		public void run() {
+        		mediaPlayer.stop();
+   			 }
+		});
+		
+		mediaPlayer.play();
+	}
+	
 	private void waitForEnd(){
 
 		//While the song is still in the playing stage continue playing.
@@ -201,7 +220,7 @@ public class MainMenu{
 
 	}
 
-	//TODO Make it so that the user can type song name or number in playlist
+	//TODO Make it so that the user can type song name/option name or number in playlist
 	private int userChoice(int optionsLimit){
 
 		try{
@@ -230,7 +249,6 @@ public class MainMenu{
 	}
 	
 	//This will search for and retrieve every song under the Resources folder
-	//TODO Fetch all songs under resources and print them out as options as well as create a menu for optios
 	private void fetchSongs(String musicLocation) {
 		
 		File musicDir = new File(musicLocation);
@@ -249,6 +267,7 @@ public class MainMenu{
 		
 	}
 	
+	//Like the generatePlayListAndPlay function, but this displays every song available
 	private void browseAndPlay(){
 
 		String[] songsList = new String[songs.size()];
@@ -262,20 +281,7 @@ public class MainMenu{
 		MenuGenerator menGen = new MenuGenerator(songsList.length);
 		String[] list = menGen.getList();
 		
-
-		
-		for(int i = 0; i <= list.length - 1; i++){
-
-			list[i] = list[i] + songsList[i];
-			int mp3Index = list[i].indexOf(".mp3");
-			list[i] = list[i].substring(0, mp3Index);
-
-		}
-
-		//Print playlist
-		for(int i = 0; i < list.length; i++){
-			System.out.println(list[i]);
-		}
+		printSongsList(list, songsList, false);
 
 		System.out.print("Choose a song, any song: ");
 
@@ -303,5 +309,73 @@ public class MainMenu{
 			printMenu();
 			
 		}
+		
+	}
+	
+	private void printSongsList(String[] list, String[] songsList, boolean random) {
+		
+		if(random) {
+			
+			ArrayList<Integer> usedSongs = new ArrayList<Integer>();
+			
+			System.out.println("---------------SONGS---------------");
+			
+			for(int i = 0; i <= list.length - 1; i++){
+
+				int randomSong = (int) Math.round(Math.random() * (songsList.length - 1)) + 0;
+				
+				if(usedSongs.contains(randomSong)){
+					
+					int randomSong2 = (int) Math.round(Math.random() * (songsList.length - 1)) + 0;
+					
+					while(usedSongs.contains(randomSong2)){
+						
+						randomSong2 = (int) Math.round(Math.random() * (songsList.length - 1)) + 0;
+						
+					}
+					
+					list[i] = list[i] + songsList[randomSong2];
+					int mp3Index = list[i].indexOf(".mp3");
+					list[i] = list[i].substring(0, mp3Index);
+					usedSongs.add(randomSong2);
+					
+				}else{
+					
+					list[i] = list[i] + songsList[randomSong];
+					int mp3Index = list[i].indexOf(".mp3");
+					list[i] = list[i].substring(0, mp3Index);
+					usedSongs.add(randomSong);
+					
+				}
+
+			}
+
+			for(int i = 0; i < list.length; i++){
+				System.out.println(list[i]);
+			}
+			
+			System.out.print("-----------------------------------\n");
+			
+		}else{
+			
+
+			System.out.println("---------------SONGS---------------");
+			
+			for(int i = 0; i <= list.length - 1; i++){
+
+				list[i] = list[i] + songsList[i];
+				int mp3Index = list[i].indexOf(".mp3");
+				list[i] = list[i].substring(0, mp3Index);
+
+			}
+
+			
+			for(int i = 0; i < list.length; i++){
+				System.out.println(list[i]);
+			}
+			
+			System.out.print("-----------------------------------\n");
+		}
+		
 	}
 }
